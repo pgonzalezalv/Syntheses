@@ -1,9 +1,30 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{eplexercises}[2015/01/14 EPL exercises class]
 
+% We do not license exercises under CC-BY-SA since part of
+% the documents are work of professors.
+
+% I need to pass license=none to eplbase so I cannot just do
+% \LoadClassWithOptions because it ignores \PassOptionsToClass.
+% I need to pass every option manually with the 2 following lines
+% and then use \LoadClass
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{../../../../../../eplbase}}
+\ProcessOptions\relax
+\PassOptionsToClass{license=none}{../../../../../../eplbase}
+
 \LoadClassWithOptions{../../../eplbase}
 
-\IfLanguageName{english}{\newcommand{\epltype}{exercises solution}}{\newcommand{\epltype}{correctif}}
+\IfLanguageName{english}{
+\newcommand{\Epltype}{Exercises solutions}
+\newcommand{\epltypesingular}{exercises solutions} % Selon moi, on a des solutions d exercices, pas une seule
+\newcommand{\epltypeplural}{exercises solutions}
+}{
+\newcommand{\Epltype}{Correctif}
+\newcommand{\epltypesingular}{correctif} % version au singulier
+\newcommand{\epltypedefadj}{le } % adjectif défini à utiliser au singulier
+\newcommand{\epltypegender}{} % marque du genre ; masculin donc rien
+}% end else IfLanguageName{english}
+
 \newcommand{\hypertitle}[7][e ]{%
 \basehypertitle[#1]{#2}{#3}{#4}{#5}{#6}{#7}{\IfLanguageName{english}{Exercises solutions}{Correctif des APEs}}}
 
