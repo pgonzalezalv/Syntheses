@@ -19,6 +19,7 @@
 \RequirePackage{amssymb}
 \RequirePackage{amsthm}
 \RequirePackage{enumitem}
+\RequirePackage{float}
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator{\arcsinh}{arcsinh}
@@ -92,7 +93,7 @@
 % It has never been easier to write derivatives !
 \newcommand{\fpart}[2]{\dfrac{\partial #1}{\partial #2}}
 \newcommand{\ffpart}[2]{\dfrac{\partial^2 #1}{\partial #2^2}}
-\newcommand{\fdpart}[3]{d\frac{\partial^2 #1}{\partial #2\partial #3}}
+\newcommand{\fdpart}[3]{\dfrac{\partial^2 #1}{\partial #2\partial #3}}
 \newcommand{\fnpart}[3]{\dfrac{\partial^{#3} #1}{\partial {#2}^{#3}}}
 \newcommand{\fdif}[2]{\dfrac{\dif #1}{\dif #2}}
 \newcommand{\ffdif}[2]{\dfrac{\dif^2 #1}{\dif #2^2}}
@@ -120,6 +121,7 @@
 \newtheorem{myineg}[mydef]{Inequality}
 \newtheorem{mycipher}[mydef]{Cipher}
 \newtheorem{myatk}[mydef]{Attack}
+\newtheorem{myax}[mydef]{Axiom}
 \newtheorem{myprob}{Problem}
 \newtheorem{mylaw}{Law}
 \newtheorem{myhyp}{Assumption}
@@ -134,12 +136,13 @@
 \newtheorem{mycorr}[mydef]{Corrolaire}
 \newtheorem{mytheo}[mydef]{Théorème}
 % Without number in front of theorem
-\newtheorem*{mytheowithoutnumber}{Théorème} 
+\newtheorem*{mytheowithoutnumber}{Théorème}
 \newtheorem{mylem}[mydef]{Lemme}
 \newtheorem{myexem}[mydef]{Exemple}
 \newtheorem{myineg}[mydef]{Inégalité}
 \newtheorem{mycipher}[mydef]{Chiffre}
 \newtheorem{myatk}[mydef]{Attaque}
+\newtheorem{myax}[mydef]{Axiome}
 \newtheorem{myprob}{Problème}
 \newtheorem{mylaw}{Loi}
 \newtheorem{myhyp}{Hypothèse}
