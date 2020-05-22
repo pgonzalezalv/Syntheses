@@ -1,54 +1,76 @@
-\documentclass[en]{../../../eplexercises}
+\PassOptionsToPackage{shortlabels}{enumitem}
+\documentclass[en,license=none]{../../../eplexercises}
+\usepackage{../eplcrypto}
+\usepackage{tikz}
 
 \usepackage{qtree}
+\usepackage[]{algorithm2e}
+\usepackage{algorithmic}
+\usetikzlibrary{patterns}
+\usetikzlibrary{shapes}
+
+\newcommand{\PrivKmultcpa}[1][\A,\Pi]{\PrivK_{#1}^\mathsf{multcpa}}
+% Arithmetic
+\newcommand{\modn}{\, (\text{mod } n)}
+\newcommand{\dset}[2]{\{#1,\dots, #2\}}
+\newcommand{\MAC}{\mathsf{MAC}}
+\DeclareMathOperator{\ord}{\mathsf{ord}}
+\newcommand{\PubK}{\mathsf{PubK}}
+\newcommand{\PubKcpa}[1][\A,\Pi]{\PubK^\mathsf{cpa}_{#1}}
+\newcommand{\ComHide}{\mathsf{Com}^\mathsf{hide}}
+\newcommand{\ComBind}{\mathsf{Com}^\mathsf{bind}}
+\newcommand{\HashColl}{\mathsf{HashColl}}
 
 \newcommand{\xor}{\oplus}
+\newcommand{\st}{\text{ s.t. }}
+\newcommand{\Sigforgeone}{\Sigforge^{\text{1-time}}}
 
-\newcommand{\A}{\mathcal{A}}
-\newcommand{\D}{\mathcal{D}}
-\renewcommand{\C}{\mathcal{C}}
-\renewcommand{\K}{\mathcal{K}}
-\newcommand{\M}{\mathcal{M}}
-\newcommand{\G}{\mathcal{G}}
-\DeclareMathOperator{\Gen}{\mathsf{Gen}}
-\DeclareMathOperator{\Enc}{\mathsf{Enc}}
-\DeclareMathOperator{\Dec}{\mathsf{Dec}}
-\DeclareMathOperator{\Mac}{\mathsf{Mac}}
-\DeclareMathOperator{\Vrfy}{\mathsf{Vrfy}}
-\DeclareMathOperator{\Com}{\mathsf{Com}}
-\DeclareMathOperator{\Open}{\mathsf{Open}}
-\DeclareMathOperator{\Sign}{\mathsf{Sign}}
-\DeclareMathOperator{\Sig}{\mathsf{Sig}}
+% New commands
+\newcommand{\flec}{\draw[->,>=latex]}
+\newcommand{\flect}{\draw[->,>=latex,red]}
+\newcommand{\flecc}{\draw[->,>=latex,blue]}
+\newcommand{\mess}{node[midway,above]}
+\newcommand{\messd}{node[midway,below]}
+\newcommand{\trapeze}[2]{\draw #2 node {#1};
+	\draw[line width=1pt] #2 ++(-1,2) -- ++(2,-1) {[rounded corners] -- ++(0,-2) -- ++(-2,-0)} -- ++(0,3);}
+\newcommand{\position}{(0,0)}
+\newcommand{\mylabel}{$x_1$}
+\newcommand{\carref}[2] { \draw[line width = 1pt,fill=#2] #1 ++ (-1,-1) rectangle #1 ++ (1,1); }
+\newcommand{\carrep}[3] { \draw[line width = 1pt,pattern color=#2,pattern= #3] #1 ++ (-1,-1) rectangle #1 ++ (1,1); }
 
-\DeclareMathOperator{\PrivK}{PrivK}
-\DeclareMathOperator{\MacForge}{MacForge}
-\DeclareMathOperator{\Sigforge}{Sig-forge}
-\DeclareMathOperator{\Invert}{Invert}
-\DeclareMathOperator{\DDH}{DDH}
-\DeclareMathOperator{\DLog}{DLog}
-\newcommand{\PrivKeav}{\PrivK^{\text{eav}}}
-\newcommand{\PrivKmultcpa}{\PrivK^{\text{multcpa}}}
-\newcommand{\Sigforgeone}{\Sigforge^{\text{1--time}}}
 
-\DeclareMathOperator{\Ima}{\mathsf{Im}}
+\titleformat
+{\subsection}[hang]{\bfseries\Large}{\thesubsection: }{0.5ex}{}
 
 \hypertitle{Cryptography}{7}{MAT}{2450}
-{Benoît Legat}
-{François Koeune, Olivier Pereira}
+{Benoît Legat \and Guillaume Gheysen \and Olivier Leblanc \and Luis Tascon Gutierrez \and Jean-Martin Vlaeminck}
+{François Koeune and Olivier Pereira}
+\newpage
+Special thanks to the assistants Francesco Berti (francesco.berti@uclouvain.be) and Pierrick M\'eaux (pierrick.meaux@uclouvain.be) who gave us the \LaTeX\ code of the statements of the exercises.
 
-\include{APE1}
+Note: I (Luis Tascon Gutierrez) had to merge the \LaTeX\ code of the solution we have written and the code the assistants sent to me and it means that there might still be some typo errors due to commands that were not the same between the two documents.
 
-\include{APE2}
+Note: the distribution of the exercises changes from year to year. Here, the distribution of the year 2019--2020 is indicated.
 
-\include{APE3}
-
-\include{APE4}
-
-\include{APE5}
-
-\include{APE6}
-
-%\include{APE7}
+\input{tp/tp1.tex}
+\newpage
+\input{tp/tp2.tex}
+\newpage
+\input{tp/tp3.tex}
+\newpage
+\input{tp/tp4.tex}
+\newpage
+\input{tp/tp5.tex}
+\newpage
+\input{tp/tp6.tex}
+\newpage
+\input{tp/tp7.tex}
+\newpage
+\input{tp/tp8.tex}
+\newpage
+\input{tp/tp9.tex}
+\newpage
+\input{tp/tp10.tex}
 
 \bibliographystyle{plain}
 \bibliography{biblio}

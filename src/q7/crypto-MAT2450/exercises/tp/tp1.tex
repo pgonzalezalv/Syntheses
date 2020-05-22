@@ -1,0 +1,202 @@
+
+
+\section{}
+
+\subsection{Exercise 1 (Vigenère)}
+
+You saw in the class the Vigenère encryption scheme.
+Write it formally as $\Pi=(\Gen, \Enc, \Dec)$, with a key of length $t$, with $4 \le t \le 20$.
+
+
+\begin{solution}
+	\begin{itemize}
+		\item $\Gen$: on input $1^t$, pick $t \pick \{4, \dots, 20\}$,
+		then pick $k \pick \dset{0}{25}^t$ and output it as the key.
+		Note that the usual $n$ is here written $t$, as it is the length of the key.
+
+		\item $\Enc$: on input a key $k\in \dset{0}{25}^t$ and a message $m\in \dset{0}{25}^*$ of length $|m|$, construct the ciphertext
+		\[ c = [(m_i + k_{i \mod t}) \mod 26]_{0 \le i \le |m|-1} \]
+		This array-like notation means that we build each character of the ciphertext $c_i$ by adding (modulo $26$) the corresponding character of the plaintext $m_i$ with the component $i \mod t$ of the key.
+		All sequences (the message, the key and the ciphertext) are zero-indexed.
+
+		A more ``mathematical'' approach:
+
+		For $i=1, \dots, \lceil \frac{|m|}{t} \rceil$ do:
+
+		\hspace{20pt}For $j=1, \dots, t$ do:
+
+		\hspace{20pt}\hspace{20pt}$c_{t(i-1)+j} = m_{t(i-1)+j} + k_j \mod 26$
+
+		Return $c_1 || c_2 || \dots || c_{|m|}$.
+
+		This time, the sequences are 1-indexed.
+
+		\item $\Dec$: do the inverse: on input key $k \in \dset{0}{25}^t$ and message $m\in\dset{0}{25}^*$, construct the message
+		\[ m = [(c_i - k_{i \mod t}) \mod 26]_{0 \le i \le |c|-1} \]
+	\end{itemize}
+\end{solution}
+
+
+
+\subsection{Exercise 2 (Perfect secrecy.)}
+
+We define the following encryption scheme for messages, keys and
+ciphertexts in $\Z_n$, where $\Z_n$ is essentially
+the integers in the interval $[0,n[$ 
+(in fact $(\Z_n,+)$ forms a group):
+\begin{itemize}
+  \item $\Gen$ outputs a key $k \in \K$ selected uniformly at random.
+  \item $\Enc_k(m) \define k+m \mod n$
+  \item $\Dec_k(c) \define c-k \mod n$
+\end{itemize}
+
+Suppose messages are drawn from $\M$ according to the binomial
+distribution. More precisely $M\sim \mathrm{Bi}(n-1,p)$ for some probability $p$ 
+which means that $\forall m\in \M: \Pr[M=m]=\binom{n-1}{m}p^{m}(1-p)^{n-1-m}$.
+
+\begin{enumerate}
+  \item Show that the encryption scheme above is perfectly secret.
+  \item Evaluate $\Pr[C=c]$ for every $c \in \C$.
+  \item Evaluate $\Pr[K=k|C=c]$ for every $k\in \K$ and $c\in \C$.
+\end{enumerate}
+
+
+\begin{solution}
+  \begin{enumerate}
+    \item
+      We have perfect secrecy if: $\Pr[C = c | M = m_0] = \Pr[C = c | M = m_1] $ for every $m_0, m_1 \in \M$ and $c \in \C$.
+      
+      Let $c \in \C$ and $m\in \M$.
+      We have:
+      \begin{align*}
+        \Pr[C = c | M = m]
+        & = \Pr[M + K = c \pmod{n} | M = m]\\
+        & = \Pr[m + K = c \pmod{n}]\\
+        & = \Pr[K = c - m \pmod{n}]\\
+        & = \frac{1}{n} \text{ (because $K$ is selected \textbf{uniformly at random} in } \K \text{ where } \abs{\K} = n )\\
+        & = \Pr[C = c | M = m'] \text{ for every } m' \in \M
+      \end{align*}
+      Therefore, we have :
+      \[
+        \Pr[C = c | M = m_1] = \Pr[C = c | M = m_2]
+      \]
+      for every $c \in \C$ and $m_1,m_2 \in \M$.
+
+      Which means we have perfect secrecy.
+    \item
+        Using the the result obtained at last exercice and the equivalent definitions about perfect secrecy, we can obtain:
+      \begin{align*}
+          \Pr[C = c]  & = \Pr[C = c | M = m] \text{ for every } m \in \M \\
+          & = \frac{1}{n}
+      \end{align*}
+      Other way to solve it (thanks to Benoît Legat):
+      \begin{align*}
+        \Pr[C = c]
+        & = \sum_{m \in \M} \Pr[\Enc_K(M) = c | M = m] \Pr[M = m]\\
+        & = \frac{1}{n} \sum_{m \in \M} \Pr[M = m]\\
+        & = \frac{1}{n}.
+      \end{align*}
+    \item
+      \begin{align*}
+        \Pr[K = k | C = c]
+        & = \Pr[C - M \equiv k \pmod{n} | C = c]\\
+        & = \Pr[c - M \equiv k \pmod{n}]\\
+        & = \Pr[M \equiv c - k \pmod{n}]\\
+        & = {n-1 \choose c-k} p^{c-k} (1-p)^{n-1-c+k}.
+      \end{align*}
+  \end{enumerate}
+\end{solution}
+
+
+
+\subsection{Exercise 4 (Negligible functions.)}
+
+\begin{enumerate}
+\item Let $f$ be a negligible function in $n$. Show that $g: n \mapsto
+  1000\cdot f(n)$ is negligible too.
+\item Show that the function $n \mapsto n^{-\log(n)}$ is negligible in $n$.
+\end{enumerate}
+
+
+\begin{solution}
+  \begin{enumerate}
+    \item Let $p$ be a polynomial,
+      let's take $q = 1000p$,
+      since it is also a polynomial, we know
+      that there exists $N$ such that for all $n \geq N$,
+      \[ f(n) \leq \frac{1}{q(n)}. \]
+      But that implies that
+      \[ 1000 \cdot f(n) \leq \frac{1}{p(n)} \]
+      so
+      \[ g(n) \leq \frac{1}{p(n)}. \]
+    \item Let $p(n) = a_0 + a_1 n + \cdots + a_dn^d$ be an
+      arbitrary polynomial of arbitrary degree $d$.
+      Let $N_1$ such that $N_1 > r$ for each root $r$ of $p$.
+      We know that for $n \geq N_1$, the sign of $p$ is the sign of $a_d$.
+      Of course, if $a_d < 0$, our job is impossible but we do not consider these cases.
+      Since $p(n) > 0$, our equation is equivalent to
+      \[ n^{\log(n)} \geq p(n) \]
+      For $n \geq \max(N_1,1)$ we also have
+      $p(n) \leq n^d \sum_{i=0}^d|a_i|$.
+      Taking the logarithm on both side (we can do it since the logarithm is strictly increasing),
+      we have	%Why ? Can you explain this operation ?
+      \[ \log^2(n) - d \log(n) - \log\sum_{i=0}^d|a_i| \geq 0 \]
+      which is a second order polynomial in $\log(n)$.
+      Let $r_1,r_2$ be its roots.
+      We can take $N = \max(N_1,1,2^{r_1},2^{r_2})$.
+
+      \textbf{There is another way to show this}. We know that, f is negligible iff for all positive polynomial p, there exist an N such that for all $n\geq N$: $ f(n) \leq \frac{1}{p(n)}$.
+
+      In our case we have $f(n) = n^{-log(n)}$ and we represent any polynomial as $n^c$. Then:
+      \begin{align*}
+          n^{-\log(n)} \leq n^{-c}
+          \log(n^{-\log(n)}) \leq \log(n^{-c})
+          \log(n) \geq c
+      \end{align*}
+      If we take $N = \exp(c)$, then our relation will be respected. As there exist an N where $n\leq N$ in wich the relation is respected, then the function is negligible.
+  \end{enumerate}
+\end{solution}
+
+
+
+\subsection{Exercise 5 (Efficiency.)}
+
+Explain why the function that maps $n$ on a sequence of ``$1$'' of length
+$\lfloor \sqrt{n}\rfloor$ cannot be evaluated by any efficient algorithm.
+
+An example of such algorithm is given in Algorithm~\ref{alg1}.
+\begin{algorithm}
+\begin{algorithmic}
+    \REQUIRE $n \geq 0$
+    \ENSURE A sequence of $\sqrt{n}$ ``$1$''
+    \FOR{$i=0$ to $\lfloor\sqrt{n}\rfloor$}
+        \STATE Print `1'
+    \ENDFOR
+\end{algorithmic}
+\caption{example of algorithm}
+\label{alg1}      
+\end{algorithm}
+
+Hint: see $n$ as a power of $2$.
+
+
+\begin{solution}
+  An algorithm A is efficient if there exist a PPT p such that:
+  \[ A(x) \leq p(|x|) \]
+  As we can see from the exercise:
+  \[A(n) \ = \ \sqrt{n} \]
+  \[ |n| \ = \ \log_2(n) \textbf{ because n is encoded as a binary number} \]
+  (Here, the vertical bars don't represent the absolute value, but the ``length'' of the number.)
+  But for all PPT p,
+  \[ \sqrt{n}  >  p(\log_2(n)) \]
+  So the algorithm is not efficient.
+
+  \textbf{P.S.}: It would have been efficient if we write the input as $1^n$, because then the algorithm would have received an input of size $n$ as an $n$-bit number.
+
+  \textbf{Other more intuitive approach : }
+  The input $n$ can be expressed under binary form as: \[n = 2^{|n|}\]
+  Let's say that $k = |n|$. We know that the algorithm has to do at least $\sqrt{n}$ steps.
+  \[\sqrt{n} = \sqrt{2^k} = 2^{\frac{k}{2}}\]
+  Which is not polynomial.
+\end{solution}
+

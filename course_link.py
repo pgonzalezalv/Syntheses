@@ -8,26 +8,25 @@ Created on 24/08/2018
 
 import os
 import sys
-import yaml   
-            
-def main():
-    # Absolute path to the config file
-    if len(sys.argv) == 3:
-        CONFIG_FILE_NAME = sys.argv[1] + 'src/config.yml' 
-        name = sys.argv[2]
-    else:
-        CONFIG_FILE_NAME = 'src/config.yml' 
-        name = sys.argv[1]
-        
-    with open(CONFIG_FILE_NAME, 'r') as stream:
+
+# Absolute path to the config file
+if len(sys.argv) == 3:
+    CONFIG_FILE_NAME = sys.argv[1] + 'src/config.yml'
+    name = sys.argv[2]
+else:
+    CONFIG_FILE_NAME = 'src/config.yml'
+    name = sys.argv[1]
+
+with open(CONFIG_FILE_NAME, 'r') as stream:
+    try:
+        import yaml
         document = yaml.load(stream)
         stream.close()
-        try:
-            titre = document['clients'][0]['output']['parameters'][0]['parameters'][5]['mapping'][name]
-        except KeyError:
-            titre = name
+        titre = document['name'][name]
+    except:
+        titre = name
 
+if sys.version_info.major >= 3:
+    print(titre)
+else:
     print(titre.encode('utf-8'))
-            
-if __name__ == "__main__":
-    main()

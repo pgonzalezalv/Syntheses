@@ -1,0 +1,322 @@
+
+
+\section{}
+
+\subsection{Exercise 1 (Security model.)}
+
+Let $\negl$ denote a negligible function.
+Remember that $\Pi \define \langle \Gen, \Enc, \Dec \rangle$ has \emph{indistinguishable
+multiple encryption in the presence of eavesdroppers} if $\forall$
+PPT $\A$, $\exists$ $\negl$:
+  \[\Pr[\PrivKmult(n)=1]\leq\frac12+\negl(n) \,,\]
+where $\PrivKmult(n)$ is defined as follows.
+\begin{enumerate}
+\item   $\A$ outputs $M_0=(m_0^1,\ldots,m_0^t),
+M_1=(m_1^1,\ldots,m_1^t)$
+\item Choose $k \leftarrow \G(1^n)$ and $b \leftarrow \{0,1\}$, and send
+  $(\Enc_k(m_b^1),\ldots,\Enc_k(m_b^t))$ to $\A$
+\item $\A$ outputs $b'$
+\item Define $\PrivKmult(n) \define 1$ iff $b=b'$
+\end{enumerate}
+
+Also remember that $\Pi \define \langle \Gen, \Enc, \Dec \rangle$ has \emph{indistinguishable
+encryption under a chosen-plaintext attack} if $\forall$ PPT $\A$,
+$\exists$ $\negl$:
+  \[\Pr[\PrivKcpa(n)=1]\leq\frac12+\negl(n) \,,\]
+where $\PrivKcpa(n)$ is defined as follows.
+
+\begin{enumerate}
+  \item Choose $k\leftarrow \Gen(1^n)$
+  \item \textbf{$\A$ is given oracle access to $\Enc_k(\cdot)$}
+  \item $\A$ outputs $m_0, m_1 \in \M$
+  \item Choose $b\pick \bset$ and send $\Enc_k(m_b)$ to $\A$
+  \item \textbf{$\A$ is again given oracle access to $\Enc_k(\cdot)$}
+  \item $\A$ outputs $b'$
+  \item Define $\PrivKcpa(n) \define 1$ iff $b=b'$
+\end{enumerate}
+
+Define the concept of indistinguishable \emph{multiple} encryption under a chosen-plaintext attack.
+
+
+\begin{solution}
+%Sending it once (in a vector) or with a loop is exactly the same, so I think only one definition is sufficient...
+  Two definition can be proposed.
+  The first one is the one given in the reference \cite[p.~84]{katz2007introduction}.
+
+  $\Pi \define \langle\Gen, \Enc, \Dec\rangle$ has indistinguishable \emph{multiple} encryption under a chosen-plaintext attack
+  if $\forall$ PPT $\A$, $\exists$ negl. $\epsilon$:
+  \[ \Pr[\PrivKmultcpa(n) = 1] \leq \frac{1}{2} + \epsilon(n), \]
+  where $\PrivKmultcpa(n)$ is defined as follows. This is the challenger's viewpoint.
+  \begin{enumerate}
+    \item Choose $k \leftarrow \Gen(1^n)$
+    \item $\A$ is given oracle access to $\Enc_k(\cdot)$
+    \item $\A$ outputs $M_0 = (m_0^1, \ldots, m_0^t)$, $M_1 = (m_1^1, \ldots, m_1^t)$
+    \item Choose $b \leftarrow \{0,1\}$, and send $(\Enc_k(m_b^1), \ldots, \Enc_k(m_b^t))$ to $\A$
+    \item $\A$ is again given oracle access to $\Enc_k(\cdot)$
+    \item $\A$ outputs $b'$
+    \item Define $\PrivKmultcpa(n) \define 1$ iff $b = b'$
+  \end{enumerate}
+
+  An additional definition can be found in the reference book \cite[p.~75]{katz2007introduction}.
+  Both are equally good since it can be proven they are equivalent to the definition of indistinguishably of a \emph{single} encryption
+  under CPA.
+  Proving that, if $\Pi$ has indistinguishable \emph{multiple} encryption under CPA then it also has indistinguishable \emph{single} encryption,
+  is trivial.
+  The other way is quite tricky.
+  However in public key cryptosystems, CPA is the same as EAV since $\A$ has the public key and therefore oracle access to $\Enc_k$.
+  There is therefore the same property in asymmetric crypto for EAV than for symmetric crypto with CPA:
+  equivalence of single- and multiple-message security.
+  This is stated by \cite[theorem~11.6]{katz2007introduction} where it is proven.
+  The proof is very similar to the proof needed to show the equivalence of single-message CPA and multiple-message CPA so if you are in doubt, just check it out.
+\end{solution}
+
+
+
+\subsection{Exercise 2 (Pseudorandomness.)}
+
+Let $F\colon \bset^* \times \bset^* \mapsto \bset^*$ be a
+(length-preserving) pseudorandom function, that is, if $k$ is selected
+uniformly at random in $\bset^n$, then $F_k(\cdot)$ is
+computationnaly indistinguishable from a function $f$ selected randomly in the set of
+functions from $\bset^n$ to $\bset^n$. More formally, $\forall$ PPT $\D$, $\exists$ negl. $\negl$:
+\[\left|\Pr[\D^{F_k(\cdot)}(1^n)=1]-\Pr[\D^{f(\cdot)}(1^n)=1]\right|\leq\negl(n)\]
+
+Show that $F$ cannot seem random in front of an adversary who has an unbounded computational power,
+in the sense that she can distinguish it from a random function.
+
+
+\begin{solution}
+  There are $|\bset^n|^{|\bset|^n} = {2^n}^{2^n}$ function from $\bset^n$ to $\bset^n$.
+  However, since there are only $2^n$ different $k$, $F_k$ can only be $2^n$ different functions.
+  If the distinguisher $D^g$ is unbounded, he can just check the output of $g$ for every possible input and for all $k \in \bset^n$, he can check if it has the same output of $g$.
+  If it has the same output of $F_k$ for at least one $k$, then $D^g(1^n) = 1$, else $D^g(1^n) = 0$.
+  More formally
+  \[
+    D^g(1^n) \overset{\Delta}{=}
+    \left\{ \begin{array}{rl}
+        1 & \mbox{if }\exists k \in \{0,1\}^n, \forall m \in \bset^n, F_k(m) = g(m)\\
+		0 & \mbox{otherwise.}\\
+    \end{array} \right.
+  \]
+  If $g$ is indeed a pseurorandom function, we can see that
+  \[ \Pr[D^{F_k}(1^n) = 1] = 1 \]
+  for all $k \in \bset^n$: we are guaranteed to detect it as we enumerate all possible $F_k$.
+
+  If $g$ is a true random function, then the only case where we may be wrong is if the random function ``mimics'' one of the pseudorandom function, that is $\exists k\colon \forall m \in \bset^n \colon f(m)=F_k(m)$. Let's evaluate the probability that it happens:
+  \[ |\{f \colon \{0,1\}^n \mapsto \{0,1\}^n \suchthat \exists k \in \bset^n, \forall m \in \bset^n f(m) = F_k(m) \}| \leq 2^n. \]
+  (the inequality is there to represent the fact that there could be $k_1,k_2$ such that $F_{k_1}(m) = F_{k_2}(m)$ for all $m \in \{0,1\}^n$.)
+  Therefore
+  \[ \Pr[D^{f}(1^n) = 1] \leq \frac{2^n}{{2^n}^{2^n}} = \frac{1}{2^{n(2^n-1)}}. \]
+  Then, the difference between the probabilities is
+  \[ \abs{\Pr[D^{F_k}(1^n)=1] - \Pr[D^f(1^n)=1]} = 1-\frac{1}{2^{n(2^n-1)}} \approx 1 \text{ for large values of } n \]
+  which is clearly non-negligible.
+
+  (Note that there is a slight chance that the distinguisher makes a mistake, but this probability decreases more than exponentially when $n$ increases.)
+\end{solution}
+
+
+
+\subsection{Exercise 3 (Reduction.)}
+
+Let $\Pi \define \langle \Gen,\Enc,\Dec\rangle$ be an encryption scheme having
+indistinguishable encryption under a chosen plaintext attack. Suppose we
+define a new scheme $\Pi' \define \langle \Gen',\Enc',\Dec'\rangle$ as follows.
+\smallskip
+\begin{itemize}
+  \item $\Gen' \define \Gen$
+  \item $\Enc_k'(m) \define \Enc_k(m)||1$ (i.e. a `1' bit is appended to the ciphertext)
+  \item $\Dec_k'(c) \define \Dec_k(c_1)$, where $c_1$ is obtained by discarding the last bit of $c$.
+\end{itemize}
+\smallskip
+Is $\Pi'$ also a CPA secure encryption scheme? Provide either an (efficient) attack/adversary
+or a (polynomial) reduction, depending on your claim.
+
+
+\begin{solution}
+  $\Pi$ is a secure encryption scheme under CPA. $\Pi$ is public, only the key is hidden from $\A$. Adding a 1 at the end will just give no information to $\A$.
+
+  %To prove it rigorously, we can prove that ``if $\Pi'$ is insecure then $\Pi$ is insecure'' since it is the contraposition of ``if $\Pi$ is secure then $\Pi'$ is secure''. % Perso je trouve la formulation rend confus
+  This proof methodology is called ``reduction''.
+
+    %TODO define more clearly the interface with the adversary and with the oracle
+  Let $\C$ be the adversary trying to break $\Pi$ and an efficient adversary $\A$ that can break $\Pi'$ with a non-negligible probability. $\O$ is the oracle that gives $\C$ the challenge to break the scheme $\Pi$.
+  \begin{enumerate}
+    \item $\O$ is given $1^n$ as input as $\C$ that will transmit it to $\A$.
+    \item First query phase:
+      \begin{itemize}
+        \item $\A$ outputs $m_i$ as message to $\C$.
+        \item $\C$ outputs $m_i$ as message to $\O$.
+        \item $\O$ outputs $c_i = Enc_k(m_i)$ as message to $\C$.
+        \item $\C$ sends back $c_i||1$ to $\A$.
+      \end{itemize}
+    \item Challenge phase:
+      \begin{itemize}
+        \item $\A$ outputs $m_0^\ast, m_1^\ast$ to $\C$.
+        \item $\C$ outputs $m_0^\ast, m_1^\ast$ as message to $\O$.
+        \item $\O$ choose randomly $b \leftarrow \{0,1\}$.
+        \item $\O$ outputs $c^\ast = Enc_k(m_b^\ast)$ to $\C$.
+        \item $\C$ sends back $c^\ast||1$ to $\A$.
+      \end{itemize}
+    \item Second query phase: same as the first one.
+    \item $\A$ outputs $b'$ to $\C$.
+    \item $\C$ outputs $b'$.
+  \end{enumerate}
+  We have:
+  \[\Pr[b'=b] = \Pr[\A \text{ wins over } \Pi']\]
+  If $\A$ has a non-negligible probability to win against the $\Pi'$ scheme then $\C$ has also a non negligible probability to win against the $\Pi$ scheme. We can conclude that $\Pi'$ is also a secure scheme.
+\end{solution}
+
+
+
+\subsection{Exercise 4 (Reduction and/or attacks.)}
+
+Let $\Pi_1=\langle \Gen^1,\Enc^1,\Dec^1\rangle$ and $\Pi^2=\langle \Gen^2,\Enc^2,\Dec^2\rangle$ be an encryption scheme with $\Enc^1 \colon \K\times \M^1 \mapsto \C^1$ and $\Enc^2 \colon \K\times \M^2 \mapsto \C^2$
+\begin{enumerate}[label=\alph*.]
+\item If $\C^1 = \M^2$, let $\Pi=\langle \Gen,\Enc,\Dec\rangle$ with
+\begin{itemize}
+  \item $\Gen\define(\Gen_1,\Gen_2)$ (that is, we obtain two different keys $(k_1,k_2)$
+  \item $\Enc_{(k_1,k_2)}(m)\define\Enc_{k_2}^2(\Enc^1_{k_1}(m))$
+  \item $\Dec_{(k_1,k_2)}(c)\define\Dec^1_{k_1}(\Dec^2_{k_2}(c))$
+\end{itemize}
+
+\begin{enumerate}[label=\arabic*.]
+\item If $\Pi^1$ is CPA secure, is it $\Pi$ CPA secure?
+\item If $\Pi^2$ is CPA secure, is it $\Pi$ CPA secure?
+\item If $\Pi$ is CPA secure, is it $\Pi^1$ CPA secure?
+\item If $\Pi$ is CPA secure, is it $\Pi^2$ CPA secure?
+\end{enumerate}
+\item If $\M^1 = \M^2$ and $\C^1 = \C^2$. let $\Pi'=\langle \Gen',\Enc',\Dec'\rangle$ with
+\begin{itemize}
+  \item $\Gen' \define (\Gen^1,\Gen^2)$ (that is, we obtain two different keys $(k_1,k_2)$
+  \item $\Enc'_{(k_1,k_2)}(m) \define (c_1,c_2)$ with $c_1=\Enc^1_{k_1}(m),~c_2=\Enc^2_{k_2}(m))$
+  \item $\Dec'_{(k_1,k_2)}(c) \define \Dec_{k_1}(c_1)$ with $c=c_1\|c_2$ ($c_1$ is the first half of $c$)
+\end{itemize}
+
+\begin{enumerate}[resume*]
+\item If $\Pi^1$ is CPA secure, is it $\Pi'$ CPA secure?
+\item If $\Pi^2$ is CPA secure, is it $\Pi'$ CPA secure?
+\item If $\Pi'$ is CPA secure, is it $\Pi^1$ CPA secure?
+\item If $\Pi'$ is CPA secure, is it $\Pi^2$ CPA secure?
+\end{enumerate}
+\end{enumerate}
+
+
+\begin{solution}
+\begin{enumerate}
+	\item Let's assume $\Pi$ is not CPA secure: There exist an adversary A.\\
+	We build an adversary $A^1$ for $\Pi_1$
+	\begin{align*}
+		\Pr[b''=b;b''\leftarrow a^1] &= \Pr[b'=b;b'\leftarrow a]\\
+		\Pr[b''=b] &= \Pr[b'=b] \le 1/2+\negl
+	\end{align*}
+	We will prove this by reduction.
+	Let's assume we have a PPT adversary $\A_\Pi$ against $\Pi$ with advantage $\negl$.
+	We build an adversary $\A^1 \define \A_{\Pi^1}$ against $\Pi'$, running $\A_\Pi$ inside.
+	$\A_{\Pi^1}$ has oracle access to $\O_{\Pi^1}$.
+	We then run the following experiment (viewpoint of the adversary $\A_{\Pi^1}$):
+	\begin{enumerate}[label=(\arabic*)]
+		\item The challenger-oracle chooses $k_1 \pick \K$.
+		\item We, the adversary $\A_{\Pi^1}$, choose $k_2 \pick \K$.
+		\item Query phase: for every request for encryption of message $m\in\M_1$ made by $\A_\Pi$ to an ``oracle'' $\O_\Pi$ (played by us), we redirect this request to our oracle $\O_{\Pi^1}$ and receive $c=\Enc^1_{k_1}(m)$. We then compute $c'=\Enc^2_{k_2}(c)=\Enc^2_{k_2}(\Enc^1_{k_1}(m))=\Enc_{(k_1,k_2)}(m)$ and forward it to the ``emulated'' adversary $\A_\Pi$.
+		\item Challenge phase: the adversary $\A_\Pi$ outputs two messages $m_0$ and $m_1 \in \M^1$, we output both to the challenger-oracle.
+		\item The challenger-oracle chooses $b \pick \{0,1\}$ and sends $c^*=\Enc^1_{k_1}(m_b)$ to us. We compute $c^{*'}=\Enc^2_{k_2}(c^*)=\Enc_{(k_1,k_2)}(m_b)$ and send it to $\A_\Pi$.
+		\item Second query phase, similar to the first one.
+		\item $\A_\Pi$ outputs its guess $b'$. We output $b'' \define b'$.
+	\end{enumerate}
+	From the point of view of $\A_\Pi$, it has discuted with an oracle and challenger for $\Pi$: it has thus executed in the correct conditions and so, its advantage is $\negl$. In addition, our constructed adversary $\A_{\Pi^1}$ has only executed PPT algorithms in addition to $\A_\Pi$, so the overall adversary is PPT.
+	We can then compute the probability of success of our adversary $\A_{\Pi^1}$:
+	\[ \Pr[\PrivKcpa[\A_{\Pi^1}, \Pi^1](n)=1] = \Pr[b''=b] = \Pr[b'=b] = \Pr[\PrivKcpa(n)=1] = \frac12 + \negl(n), \]
+	the same probability as $\A_\Pi$. As we know that $\Pi^1$ is CPA-secure, then it means that $\negl(n)$ is negligible, and so $\Pi$ is also CPA-secure.
+
+	\item The proof is similar to the above, but we send $m'=\Enc^1_{k_1}(m)$ to our oracle for $\O_{\Pi^2}$ and directly get $c=\Enc^2_{k_2}(\Enc^1_{k_1}(m))=\Enc_{(k_1,k_2)}(m)$.
+
+	\textbf{If $\Pi^2$ is CPA secure, is it $\Pi$ CPA secure?}
+
+	We ($\D$) define an oracle ($O(\Pi^2)$) that can securely encode a message with $\Pi^2$ and instantiate an Attacker ($\A$). As we have to challenge the $\Pi$ scheme knowing the $\Pi^2$ is CPA secure we will proceed as follow.
+	\begin{description}
+		\item[First learning phase:] We begin by encrypting the messages from the attacker with $\Pi^1$ to send them to the oracle. The oracle responds by encrypting the message received with $\Pi^2$ and we just pass this response to the attacker.
+		\item[Challenge phase:] The attacker choose two messages and we transmit the two messages with the first encryption. The oracle will choose witch message to encrypt and will respond with one of the two messages encrypted that we will send back to the attacker.
+		\item[Second learning phase:] Same as the first one.
+	\end{description}
+	\begin{center}
+		\begin{tikzpicture}[scale=0.8]
+			%structure
+			\draw[rounded corners=10pt,thick] (0,0) rectangle (5,10);
+			\draw[rounded corners=10pt,thick] (0.5,0.5) rectangle (2,8.5);
+			\draw[rounded corners=10pt,thick] (13,0) rectangle (17,10);
+			\node[above right] at (0,10) {$\D$};
+			\node[above right] at (0.5,8.5) {$\A$};
+			\node[above left] at (17,10) {$O(\Pi^2)$};
+			\node[below left] at (5,10) {$k_1 \pick \Gen^1(1^n)$};
+			\node[below left] at (17,10) {$k_2 \pick \Gen^2(1^n)$};
+
+			%train phase
+			\flect (2,8) -- (4,8) \mess {$m_i$};
+			\flect (4,7) -- (2,7) \mess {$c_i$};
+			\flect (5,8) -- (13,8) \mess {$m_i' \define \Enc_{k_1}^1(m_i)$};
+			\flect (13,7) -- (5,7) \mess {$c_i \define \Enc_{k_2}^2(m_i')$};
+
+			%challenge phase
+			\flecc (2,5.5) -- (4,5.5) \mess {$m^{\ast}_0,m^{\ast}_1$};
+			\flecc (4,4.5) -- (2,4.5) \mess {$c^\ast$};
+			\flecc (5,5.5) -- (13,5.5) \mess {$m
+			_0^{\ast\prime} \define \Enc_{k_1}^{1}(m_0^\ast), m_1^{\ast\prime} \define \Enc_{k_1}^{1}(m_1^{\ast})$};
+			\flecc (13,4.5) -- (5,4.5) \mess {$c^\ast \define \Enc_{k_2}^{2}(m_b^{\ast\prime})$};
+			\node[below right] at (13,5.5) {$b \pick \bset$};
+
+			%train phase
+			\flect (2,3) -- (4,3) \mess {$m_i$};
+			\flect (4,2) -- (2,2) \mess {$c_i$};
+			\flect (5,3) -- (13,3) \mess {$m_i' \define \Enc_{k_1}^1(m_i)$};
+			\flect (13,2) -- (5,2) \mess {$c_i \define \Enc_{k_2}^2(m_i')$};
+
+			% output
+			\flec (2,1) -- (3,1) node[pos=1,right] {$b'$};
+			\flec (5,1) -- (6,1) node[pos=1,right] {$b''=b'$};
+		\end{tikzpicture}
+	\end{center}
+	As we can see in every case, the distinguisher will have the same probability to find the message encrypted by the oracle than the attacker to break the scheme. As the attacker can only have a probability of $1/2 + \negl$ to succeed the distinguisher will have the same probability. So, the scheme $\Pi$ is secure.
+
+	\item As seen in the previous development, if $\Pi^2$ is CPA secure, $\Pi$ is CPA secure. There is no restriction on $\Pi^1$ in that case. Therefore $\Pi^1$ could be such that $\Enc^1_{k_1}(m)\define m$ which is obviously not CPA secure. So the proposition is false.
+
+	\item Idem
+
+	\item The $\Pi'$ scheme is CPA secure if and only if $\Pi^2$ is also CPA secure. For example, if $\Enc_{k_2}^2(m) = m$ then the scheme $\Pi'$ is obviously not CPA secure.
+
+	More formally: Let's define the following experiment (the viewpoint is that of the adversary $\A$):
+	\begin{enumerate}[label=(\arabic*)]
+		\item The challenger chooses $k_1, k_2 \pick \K \times \K$.
+		\item No query phase takes place
+		\item We output $m_0=0^\abs{\M_1}$ and $m_1=1^\abs{\M_2}$ to the challenger.
+		\item The challenger chooses $b \pick \bset$ and returns $c=(\Enc^1_{k_1}(m_b), m_b)$ (recall that $\Enc^2_{k_2}(\cdot)$ is the identity here).
+		\item We output $b'=$ last bit of $c$.
+	\end{enumerate}
+	Then it is clear that $\Pr[\PrivKcpa[\A, \Pi'](1^n)=1] = \Pr[b'=b] = 1$.
+
+	\item Similar to the previous one: assume $\Enc^1$ is the identity.
+
+	\item We will proof this by reduction. Again, let's suppose we have a PPT adversary $\A_{\Pi^1}$ for $\Pi^1$ with advantage $\negl$, and let's build another PPT adversary $\A_{\Pi'}$ against $\Pi'$. The adversary $\A_{\Pi'}$ has access to an oracle $\O_{\Pi'}$ for $\Pi'$, and runs the adversary $\A_{\Pi^1}$ inside. We then run the following experiment (viewpoint of $\A_{\Pi'}$):
+	\begin{enumerate}[label=(\arabic*)]
+		\item $\A_{\Pi^1}$ chooses the security parameter $n$, sends it to $\A_{\Pi'}$, which sends it to the oracle. \emph{(Note: I'm not entirely sure of this one.)}
+		\item The oracle chooses $k_1, k_2 \pick \K \times \K$.
+		\item First query phase: When $\A_{\Pi^1}$ sends a query for encryption of message $m$ to its ``oracle'' $\O_{\Pi^1}$ (played by us), we forward it to our oracle $\O_{\Pi'}$, which sends us back an encryption $c=\Enc'_{(k_1, k_2)}(m)=(c_1, c_2)=(\Enc^1_{k_1}(m), \Enc^2_{k_2}(m))$. We forward $c_1$ to $\A_{\Pi^1}$.
+		\item Challenge phase: $\A_{\Pi^1}$ outputs two messages $m_0, m_1 \in \M^1$. We output them to the challenger-oracle.
+		\item The challenger-oracle chooses $b \pick \{0, 1\}$ and returns $c^*=\Enc'_{(k_1, k_2)}(m_b)=(c^*_1, c^*_2)=(\Enc^1_{k_1}(m_b), \Enc^2_{k_2}(m_b))$ with $c_1$ and $c_2$ of equal length.
+		\item We return $c^*_1$ to $\A_{\Pi^1}$ as the challenge of the ``oracle'' $\O_{\Pi^1}$.
+		\item Second query phase, similar to the first one.
+		\item $\A_{\Pi^1}$ outputs its guess $b'$. We output $b'' \define b'$ to the challenger.
+	\end{enumerate}
+	From the point of view of $\A_{\Pi^1}$, it has communicated with an oracle for $\Pi^1$,
+	and so it has executed in the correct conditions and its advantage in guessing $b$ is $\negl$.
+	As our adversary $\A_{\Pi'}$ only executes PPT algorithms, it is PPT too.
+	We can compute the probability of success of $\A_{\Pi'}$:
+	\[ \Pr[\PrivKcpa[\A_{\Pi'}, \Pi'](n)=1] = \Pr[b''=b] = \Pr[b'=b] = \Pr[\PrivKcpa[\A_{\Pi^1}, \Pi^1](n)=1] = \frac12 + \negl \]
+	As we know that $\Pi'$ is CPA-secure, then $\negl$ must be negligible, and so $\Pi^1$ is also CPA-secure.
+
+	Intuition: $\Pi'$ effectively executes the two encryption schemes in parallel, with no communication between the two. If one of the two encryption scheme was not CPA-secure, then we could just focus on this scheme to break the whole $\Pi'$.
+
+	\item Similar to the previous one; the only difference is that we send $c_2$ instead of $c_1$.
+\end{enumerate}
+
+\end{solution}
+

@@ -1,0 +1,226 @@
+
+\section{}
+
+
+\subsection{Exercise 1 (Commitment scheme)}
+\label{subsec:commit-scheme}
+
+Define the bit-commitment scheme $\langle \G, \Com, \Open \rangle$ with the following PPT algorithms:
+\begin{itemize}
+	\item $\Gen(1^n)$ sets $pk$ as $(\PRG,R)$, where
+	\begin{itemize}
+		\item $\mathsf{G}$ is a random generator $\lbrace 0,1 \rbrace^n \longmapsto \lbrace 0,1\rbrace^{3n}$
+		\item $R$ is a random $3n$-bit string
+	\end{itemize}
+	\item $\Com_{pk}(b)$ with $b\in\{0,1\}$ provides $(c,d)$ where:
+	\begin{itemize}
+		\item $Y$ is an $n$-bit string
+		\item  if $b=0$ $c=\mathsf{G}(Y)$
+		\item if $b=1$, $c=\mathsf{G}(Y) \oplus R$
+		\item $d=(b,Y)$
+	\end{itemize}
+	\item $\Open_{pk}(c,d)$ outputs $b$ if it can recompute $c$ from $d$ and $pk$, or $\bot$ otherwise
+\end{itemize}
+
+\begin{enumerate}
+	\item Is this scheme perfectly hiding?
+	\item Is this scheme computationaly binding?
+	\item If the committer choose $R$ is the scheme secure?
+\end{enumerate}
+
+
+\begin{solution}
+	\begin{enumerate}
+		\item For a scheme to be perfectly hiding, we need that $\forall \A$:
+		\[ \Pr[\ComHide_{\A,\Pi}=1]=\frac12 \Leftrightarrow \Pr[c|b=0] = \Pr[c|b=1] \]
+		If $b=0$, then $c$ has as much randomness as $\mathsf{G}$, which has as much randomness as $Y$, so $n$ bits of randomnes (=there are $2^n$ possible values for $c$).
+
+		If $b=1$, then $c$ has as much randomness as $\mathsf{G}$ and $R$, so basically $3n$ bits of randomness (=there are $2^{3n}$ possible values for $c$).
+
+		If we have unbounded computational power, then we could enumerate all possible outputs $\mathsf{G}(Y)$, and see if $c$ is in this set of values.
+		If $b=0$, we are sure they are in;
+		if $c=1$, there are $2^{2n}$ possible $R$ such that $\mathsf{G}(y) \oplus R$ cannot be distinguished from $\mathsf{G}(Y')$ (simply, $R=\mathsf{G}(Y)\oplus \mathsf{G}(Y')$), so there is a probability $\frac{2^{2n}}{2^{3n}}=\frac{1}{2^{n}}$ that $c \in \{\mathsf{G}(Y)\}$.
+		So the probability of success for an unbounded adversary is
+		\[ \frac{1}{2} \cdot 1 + \frac{1}{2} (1-\frac{1}{2^{n}}) = 1-\frac{1}{2^{n+1}} \]
+		So, an unbounded adversary has near-certainty of breaking the hiding property.
+
+		To break the hiding property, an adversary would need to enumerate all possible outputs of $\mathsf{G}$ (requires $2^n$ steps) if $G(Y) \oplus R \notin \{x | \forall u : x = G(u)\}$.
+
+		But this kind of event has a negligible chance of probability ($\Pr = \frac{|\mathsf{G}(Y)|}{|\mathsf{G}(Y) \oplus R|} = \frac{2^n}{2^{3n}} = \frac{1}{2^{2n}} = \negl(n)$) so an adversary with an unbounded power of calculation can easily break the property of perfectly hiding.
+
+		It is however simple to prove that the scheme is computationally hiding.
+
+		\item For the scheme to be computationally binding, it should be intractable to find $(c, d_0, d_1)$ such that $\Open_{pk}(c, d_0)=0$ and $\Open_{pk}(c, d_1)=1$.
+		If we replace, we find that it is equivalent to find $Y_0, Y_1$ such that
+		\[ c=\mathsf{G}(Y_0) = \mathsf{G}(Y_1) \oplus R \]
+		For this to be possible at all, we need to have $R=\mathsf{G}(Y_0) \oplus \mathsf{G}(Y_1)$ for some $Y_0, Y_1$.
+		But, we have that $|\{R\}|=2^{3n}$ while $|\{ \mathsf{G}(Y_0) \oplus \mathsf{G}(Y_1) \}| \le 2^{2n}$, so the probability of $R$ being correct for this to happen is at most $\frac{2^{2n}}{2^{3n}}=\frac{1}{2^n}$, which is negligible.
+		And so, \[ \Pr[\ComBind_{\A, \Pi}(n)=1] \le \frac{1}{2^n} \quad \forall \A. \]
+		So even if we have an adversary capable of finding $Y_0$ and $Y_1$ with near-certainty, the fact that $R$ can just be badly chosen for him causes its probability of success to be \emph{in all cases} negligible.
+		So, the scheme is computationally binding.
+
+		\item Not secure, because if the committer chooses $R = G(Y)$, then the opposite player can easily deduce the value of b. If $c = 0$, $b = 1$, else $b = 0$.
+	\end{enumerate}
+\end{solution}
+
+
+
+\subsection{Exercise 2 (Commitment with DL)}
+
+Let $(\mathbb{G}, \cdot)$ be a group in which the discrete logarithm is difficult, with $|\mathbb{G}|=q$.
+Let $g$ be a generator of the group and $h$ be a random element of the group ($(g, h)$ may be seen as the key of the hash function).
+Define the following hash funtion $\mathsf{H}\colon \Z^*_q \times \Z^*_q \mapsto \mathsf{G}$:
+\[ \mathsf{H}_{g,h} (\alpha, \beta) \define g^\alpha h^\beta \]
+Prove that if the DL is difficult, then, the hash function is collision resistant.
+For simplicity we assume that $q$ is prime.
+
+
+\begin{solution}
+	I don't know, maybe a reduction might be useful? It's been such a long time!
+
+	For the reduction, let's assume that we have an adversary $\A$ that can break the collision resistance by finding a collision with advantage $\negl(2n)$.
+	We have $2n$ instead of $n$ because the seed of the hash function has $2n$ bits instead of $n$.
+	Then, we can build an adversary $\D$ that can solve the DL problem:
+	\begin{enumerate}
+		\item Run $\mathcal{G}(1^n)$ to obtain $(\mathbb{G}, q, g)$ where $g$ generates $\mathbb{G}$ of order $q$ with $|q|=n$.
+		\item Choose $h \pick \mathbb{G}$.
+		\item Send $(\mathbb{G}, q, g, h)$ to $\D$.
+		\item $\D$ uses $\A$: he sends $(g, h)$ as the seed.
+		Then, with probability $\negl(2n)$, $\A$ answers with $(\alpha, \beta)$ and $(\alpha', \beta')$ such that $\alpha\neq\alpha' \vee \beta\neq\beta'$ and
+		\[ g^\alpha h^\beta = g^{\alpha'} g^{\beta'} \]
+		From this, if we want to find $x$ such that $g^x=h$, then we just replace:
+		\begin{align*}
+		g^\alpha (g^x)^\beta &= g^{\alpha'} (g^x)^{\beta'} \\
+		\alpha + x \beta &= \alpha' + x \beta' \\
+		x &= \frac{\alpha'-\alpha}{\beta-\beta'}
+		\end{align*}
+	\end{enumerate}
+	We have
+	\[ \Pr[\DLog_{\D, \mathcal{G}}(n)=1] = \Pr[g^x=h] = \Pr[\HashColl_{\A, \mathsf{H}}(n)=1] = \negl(2n) \le \negl'(n)\]
+	And, as we know that the DL problem is hard is $\mathbb{G}$, then we know that these probabilities should be negligible, and so that finding a collision is also hard.
+\end{solution}
+
+
+
+% OK
+\subsection{Exercise 3 (Commitment scheme and batching)}
+
+\copypaste{9}{0}
+
+
+
+\subsection{Exercise 4 (Decisional Diffie-Hellman and \texorpdfstring{$\mathbb{Z}_p^\ast$}{Zp*})}
+
+The goals of this exercise are to define $QR_p$, prove some of its properties, and to show that in some groups DDH and CDH assumptions are conjectured not equivalent, as DDH is easy whereas CDH is conjectured to be hard.
+
+\begin{enumerate}
+	\item For all element $a$ of $\mathbb{Z}_{11}^*$, compute $a^2 \mod 11$.
+
+	For a prime number $p$, we denote $QR_p$ the set $\{x \in \mathbb{Z}_{p}^* \; | \; \exists a\in \mathbb{Z}_{p}^*, a^2=x\}$, such $x$ are called quadratic residues modulo $p$. Show that if $p$ is odd then $|QR_p|=\frac{p-1}{2}$.
+
+	\item Show that, if $p$ is odd, $QR_p$ is a cyclic group (therefore, $QR_p$ is a subgroup of $\Z^*_p$).
+
+	\item For all element $a$ of $\mathbb{Z}_{11}^*$, compute $a^5 \mod 11$. Show that for any odd prime $p$, $x \in QR_p \Leftrightarrow x^{\frac{p-1}{2}}= 1 \mod p$, and that $x \not \in QR_p \Leftrightarrow x^{\frac{p-1}{2}}= -1 \mod p$.
+
+	\item Show that $2$ is a generator of $\mathbb{Z}_{11}^*$. For the following pairs $(a,b)$, compute $g^a, g^b$ and $g^{ab}$ in $\mathbb{Z}_{11}^*$ where $g=2$:
+	\begin{itemize}
+		\item $(2,8)$,
+		\item $(1,4)$,
+		\item $(3,5)$.
+	\end{itemize}
+	Show that for $p$ an odd prime, $g^{ab} \not \in QR_p \Leftrightarrow g^a \not \in QR_p \text{ and } g^b \not \in QR_p$.
+
+	\item Show that DDH does not hold in $\mathbb{Z}_{p}^*$ with $p$ an odd prime.
+\end{enumerate}
+
+
+% TODO rewrite this to use the official proof
+\begin{solution}
+	An official solution was given in the exercise session.
+
+	For this exercise we will work with $\Z_{11}^* = \{1,2,3,4,5,6,7,8,9,10\}$
+	\begin{enumerate}
+		\item
+		For all element $a$ of $\Z_{11}^*$, I've calculated $a^2$ mod $11$.
+		\[1^2 = 1 \quad 2^2 = 4 \quad 3^2 = 9 \quad 4^2 = 5 \quad 5^2 = 3 \quad 6^2 = 3 \quad 7^2 = 5 \quad 8^2 = 9 \quad 9^2 = 4 \quad 10^2 = 1\]
+		We see that with $p$ odd, we have $\left|QR_p\right| = \frac{p-1}{2}$. We can show it with this development:
+
+		\item
+		\nosubsolution
+
+		\item
+		For all element $a$ of $\Z_{11}^*$, I've calculated $a^5$ mod $11$.
+		\[1^5 = 3^5 = 4^5 = 5^5 = 9^5 = 1 \qquad 2^5 = 6^5 = 7^5 = 8^5 = 10^5 = 10\]
+		We can see that for $p$ prime, we have $x \in QR_p \Leftrightarrow x^{\frac{p-1}{2}} = 1 \mod p$ and  $x \notin QR_p \Leftrightarrow x^{\frac{p-1}{2}} = p-1 \mod p$.
+		\begin{itemize}
+			\item $x \in QR_p \Leftrightarrow x^{\frac{p-1}{2}} = 1 \mod p$:\\
+			We know that \[x \in QR_p \Leftrightarrow \exists a \st x = a^2 \mod p\]
+			So we have now \[x = a^2 \mod p \Leftrightarrow x^{\frac{p-1}{2}} = 1 \mod p\]
+			If we replace $x$ by $a$ we obtain $a^{2^{(\frac{p-1}{2})}} = 1 \mod p$.\\
+			But also more simply $a^{p-1} = 1 \mod p$ which is true by the group theory.
+			\item $x \notin QR_p \Leftrightarrow x^{\frac{p-1}{2}} = p-1 \mod p$:\\
+			We know that \[x \notin QR_p \Leftrightarrow \exists a \st x = a^{1+2n} \mod p\]
+			So we have now \[x = a^{1+2n} \mod p \Leftrightarrow x^{\frac{p-1}{2}} = -1 \mod p\]
+			We replace $x$ by $a$ and we get \[a^{\frac{p-1}{2}} a^{n(p-1)} \mod p = -1 \mod p\]
+			We know that $ a^{n(p-1)} \mod p = 1$, thus we simplify the equation like \[a^{\frac{p-1}{2}} \mod p = -1 \mod p\]
+			We know that $g = a^{\frac{p-1}{2}} \mod p \ne 1 \mod p$ but $g^2 = a^{p-1} = 1 \mod p$. The only solution of these two equations is $g = -1 \mod p$ which is equivalent to
+			\[x^{\frac{p-1}{2}} = p-1 \mod p\]
+		\end{itemize}
+
+		\item
+		The number $2$ is a generator of $\Z_{11}^*$, because ord($2$) $= 10$. In fact, we have $2^1 = 2$, $2^2 = 4$, $2^5 = 10$ and $2^10 = 1$. (Fermat's little theorem)
+		We have $g = 2$ so:
+		\begin{itemize}
+			\item $(2,8):\quad g^2 = 4$, $g^8 = 3$ and $g^{16} = -2$
+			\item $(1,4):\quad g^1 = 2$, $g^4 = 5$ and $g^{4} = 5$
+			\item $(3,5):\quad g^3 = -3$, $g^5 = -1$ and $g^{15} = -1$ TODO
+		\end{itemize}
+		We have to show that $g^{ab} \notin QR_p \Leftrightarrow g^a \notin QR_p \text{ and } g^b \notin QR_p$.\\
+		We know by the definition of the $QR_p$ set that
+		\[g^n \notin QR_p \Leftrightarrow \exists m \st n = 2m+1\]
+		We can thus extract from $g^{ab} \notin QR_p$ that $\exists m \st ab = 2m+1$.
+
+		% not necessary
+		%We can do a proof by contradiction:\newline
+		%If $a = 2v$ then $ab = 2bv$ and can not be equal to $2m + 1$.\\
+		%If $b = 2v$ then $ab = 2av$ and can not be equal to $2m + 1$.\\
+
+		So we are assured that $a$ and $b$ are not pairs, so we have the relation $g^a \notin QR_p \text{ and } g^b \notin QR_p$ if and only if $ab = 2m+1$ which is equivalent to $g^{ab} \notin QR_p$. That was what we had to proof.
+
+		\item
+		We have to show that DDH does not hold in $\Z_p^*$ with p an odd prime number.
+
+		We define an attacker that can see $p$, $g$, $g^a$, $g^b$ and receive $h_b = g^{ab}$ or $g^z$.
+		The behaviour of the attacker will be this one:
+		\begin{itemize}
+			\item It receives $g^a \notin QR_p$ and $g^b \notin QR_p$:\\
+			It will answer in function of $h_b$:
+			\begin{itemize}
+				\item $h_b \notin QR_p$:\\
+				It answers $h_b = g^{ab}$
+				\item $h_b \in QR_p$:\\
+				It answers $h_b = g^z$
+			\end{itemize}
+			\item It receives $g^a \in QR_p$ or $g^b \in QR_p$:\\
+			It answers randomly.
+		\end{itemize}
+		We can identify four cases with their chances of success and appearance (we already know that $\left|QR_p\right|$ is of size $\frac{p-1}{2}$):
+		\begin{enumerate}[a)]
+			\item $g^a \in QR_p$ or $g^b \in QR_p$ appears $3/4$ of the time with success = $1/2$.
+			\item $g^a \notin QR_p$ and $g^b \notin QR_p$ with $h_b = g^{ab}$  appears $1/8$ of the time with success = $1$.
+			\item $g^a \notin QR_p$ and $g^b \notin QR_p$ with $h_b = g^z$ and $g^z \in QR_p$  appears $1/16$ of the time with success = $1$.
+			\item $g^a \notin QR_p$ and $g^b \notin QR_p$ with $h_b = g^z$ and $g^z \notin QR_p$  appears $1/16$ of the time with success = $0$.
+		\end{enumerate}
+		We can now recalculate the expected value of success of our attacker:
+		\begin{align*}
+		\mathbb{E}(success) &= \frac{3}{4}\cdot \frac{1}{2} +  \frac{1}{8}\cdot 1 + \frac{1}{16}\cdot 1 + \frac{1}{16}\cdot 0\\
+		&= \frac{1}{2} + \frac{1}{16}
+		\end{align*}
+		This attacker has one sixteenth of probability more than one half which is not a negligible function (in fact it is a constant function). It is not DDH secure.
+	\end{enumerate}
+\end{solution}
+
+
+\subsection{Exercise 5}
+
+\copypaste{8}{1}
